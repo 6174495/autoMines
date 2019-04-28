@@ -30,10 +30,13 @@ public:
 signals:
 
 public slots:
+    void replay();
 private:
     QVector<QVector<int>> minesNum;
     int minesSum;
     bool initFlat = true;
+    bool isWin = false;
+    int gameOver = -1;
     int firstPress = -1;
     QVector<QVector<bool>> isPressed;
     QVector<QVector<bool>> isFlag;

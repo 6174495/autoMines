@@ -24,7 +24,7 @@ private:
     Ui::Widget *ui;
     MinesArea *minesArea;
     QVBoxLayout *buttonLayout;
-    QPushButton *pauseButton;
+    QPushButton *replayButton;
 };
 
 #endif // WIDGET_H

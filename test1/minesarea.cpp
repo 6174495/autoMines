@@ -4,37 +4,30 @@ MinesArea::MinesArea(QWidget *parent) : QWidget(parent)
 {
     setMouseTracking(true);
     setAutoFillBackground(true);
-    setMinimumSize(1200, 800);
-    minesSum = 99;
-    minesNum.resize(16);
-    isPressed.resize(16);
-    isFlag.resize(16);
-    for(int i=0;i<minesNum.size();i++){
-        minesNum[i].resize(32);
-        isPressed[i].resize(32);
-        isFlag[i].resize(32);
-    }
-    for(int i=0;i<minesNum.size();i++)
-        for(int j=0;j<minesNum[0].size();j++){
-            minesNum[i][j] = 0;
-            isPressed[i][j] = false;
-            isFlag[i][j] = false;
-        }
+    setMinimumSize(800, 400);
+    replay();
 }
 
 void MinesArea::mouseMoveEvent(QMouseEvent *e)
 {
-    movePos = e->pos();
+    if(gameOver==-1&&!isWin)
+        movePos = e->pos();
+    else{
+        movePos.setX(0);
+        movePos.setY(0);
+    }
     update();
 }
 
 void MinesArea::mousePressEvent(QMouseEvent *e)
 {
-    if(e->button() == Qt::LeftButton)
-        pressPos = e->pos();
-    if(e->button() == Qt::RightButton)
-        rightPressPos = e->pos();
-    update();
+    if(gameOver==-1&&!isWin){
+        if(e->button() == Qt::LeftButton)
+            pressPos = e->pos();
+        if(e->button() == Qt::RightButton)
+            rightPressPos = e->pos();
+        update();
+    }
 }
 
 void MinesArea::paintEvent(QPaintEvent *)
@@ -63,6 +56,8 @@ void MinesArea::paintEvent(QPaintEvent *)
     QPen grayPen(Qt::gray);
     QPen blackPen(Qt::black);
     QPen lgrayPen(QColor(0xC4, 0xC4, 0xC4));
+    QPen redPen(Qt::red);
+    QBrush redBrush(Qt::red, Qt::SolidPattern);
     QBrush whiteBrush(Qt::white, Qt::SolidPattern);
     QBrush grayBrush(Qt::gray, Qt::SolidPattern);
     QBrush blackBrush(Qt::black, Qt::SolidPattern);
@@ -73,7 +68,7 @@ void MinesArea::paintEvent(QPaintEvent *)
         for(int j=0;j<32;j++){
             if(pressPos.x()>=x+j*mineW+2&&pressPos.x()<=x+(j+1)*mineW-2&&pressPos.y()>=y+i*mineH+2&&pressPos.y()<=y+(i+1)*mineH-2&&!isFlag[i][j]){
                 if(initFlat){
-                    firstPress = i * 32 + j;
+                    firstPress = i * sizeY + j;
                     init();
                     initFlat = false;
                 }
@@ -102,9 +97,21 @@ void MinesArea::paintEvent(QPaintEvent *)
             if(!isFlag[i][j]&&isPressed[i][j]&&minesNum[i][j]==0)
                 zeroBeIsPress(i, j);
         }
+    int clickNum = 0;
+    if(!isWin){
+        for(int i=0;i<16;i++)
+            for(int j=0;j<32;j++){
+                if(isPressed[i][j]&&minesNum[i][j]==-1)
+                    gameOver = i * sizeY + j;
+                if(isPressed[i][j])
+                    clickNum++;
+            }
+        if(clickNum==sizeX*sizeY-minesSum)
+            isWin = true;
+    }
     for(int i=0;i<16;i++)
         for(int j=0;j<32;j++){
-            if(movePos.x()>=x+j*mineW+2&&movePos.x()<=x+(j+1)*mineW-2&&movePos.y()>=y+i*mineH+2&&movePos.y()<=y+(i+1)*mineH-2){
+            if(movePos.x()>=x+j*mineW+2&&movePos.x()<=x+(j+1)*mineW-2&&movePos.y()>=y+i*mineH+2&&movePos.y()<=y+(i+1)*mineH-2&&!isFlag[i][j]){
                 p.setPen(grayPen);
                 p.setBrush(grayBrush);
             }
@@ -117,6 +124,10 @@ void MinesArea::paintEvent(QPaintEvent *)
             if(isPressed[i][j]){
                 p.setPen(whitePen);
                 p.setBrush(whiteBrush);
+                if(gameOver!=-1&&i==gameOver/sizeY&&j==gameOver%sizeY){
+                    p.setPen(redPen);
+                    p.setBrush(redBrush);
+                }
                 QRectF mineArea(x+j*mineW+2, y+i*mineH+2, mineW-4, mineH-4);
                 p.drawRoundRect(mineArea, 10, 10);
                 if(minesNum[i][j]==-1){
@@ -160,6 +171,33 @@ void MinesArea::paintEvent(QPaintEvent *)
                 p.drawPolygon(triangle, 3);
                 p.setRenderHint(QPainter::Antialiasing, false);
             }
+            else if(gameOver!=-1&&minesNum[i][j]==-1){
+                p.setRenderHint(QPainter::Antialiasing, true);
+                QPointF center(x+((2*j+1)*mineW)/2, y+((2*i+1)*mineH)/2);
+                blackPen.setWidth(0);
+                p.setPen(blackPen);
+                p.setBrush(blackBrush);
+                p.drawEllipse(center, (mineW)/4.5, (mineH)/4.5);
+                blackPen.setWidth(mineW * 0.1);
+                blackPen.setCapStyle(Qt::RoundCap);
+                p.setPen(blackPen);
+                p.setBrush(blackBrush);
+                p.drawLine(x+(2*j+1)*mineW/2-mineW/3, y+(2*i+1)*mineH/2, x+(2*j+1)*mineW/2+mineW/3, y+(2*i+1)*mineH/2);
+                p.drawLine(x+(2*j+1)*mineW/2, y+(2*i+1)*mineH/2-mineW/3, x+(2*j+1)*mineW/2, y+(2*i+1)*mineH/2+mineW/3);
+                p.drawLine(x+(2*j+1)*mineW/2-mineW/(3*sqrt(2)), y+(2*i+1)*mineH/2-mineW/(3*sqrt(2)), x+(2*j+1)*mineW/2+mineW/(3*sqrt(2)), y+(2*i+1)*mineH/2+mineW/(3*sqrt(2)));
+                p.drawLine(x+(2*j+1)*mineW/2-mineW/(3*sqrt(2)), y+(2*i+1)*mineH/2+mineW/(3*sqrt(2)), x+(2*j+1)*mineW/2+mineW/(3*sqrt(2)), y+(2*i+1)*mineH/2-mineW/(3*sqrt(2)));
+                p.setRenderHint(QPainter::Antialiasing, false);
+            }
+            /*if(isWin){
+                QPen sblackPen(QColor(0xCF, 0xCF, 0xCF, 128), 99);
+
+                QFont winFont("幼圆", mineH * 5, Qt::gray);
+                QRect allArea(x, y, w, h);
+                p.setPen(sblackPen);
+                p.setFont(winFont);
+                p.drawText(allArea, Qt::AlignCenter, tr("WIN"));
+                p.setFont(mineFont);
+            }*/
         }
     QPoint zero(0, 0);
     pressPos = zero;
@@ -201,6 +239,33 @@ void MinesArea::init()
             if(posX<sizeX-1&&minesNum[posX+1][posY]!=-1) minesNum[posX+1][posY]++;
             if(posX<sizeX-1&&posY<sizeY-1&&minesNum[posX+1][posY+1]!=-1) minesNum[posX+1][posY+1]++;
         }
+}
+
+void MinesArea::replay(){
+    initFlat = true;
+    gameOver = -1;
+    minesSum = 99;
+    firstPress = -1;
+    isWin = false;
+    QPoint zero(0, 0);
+    pressPos = zero;
+    rightPressPos = zero;
+    movePos = zero;
+    minesNum.resize(16);
+    isPressed.resize(16);
+    isFlag.resize(16);
+    for(int i=0;i<minesNum.size();i++){
+        minesNum[i].resize(32);
+        isPressed[i].resize(32);
+        isFlag[i].resize(32);
+    }
+    for(int i=0;i<minesNum.size();i++)
+        for(int j=0;j<minesNum[0].size();j++){
+            minesNum[i][j] = 0;
+            isPressed[i][j] = false;
+            isFlag[i][j] = false;
+        }
+    update();
 }
 
 void MinesArea::swap(int &a, int &b)

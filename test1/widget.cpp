@@ -8,9 +8,10 @@ Widget::Widget(QWidget *parent) :
     ui->setupUi(this);
     minesArea = new MinesArea;
     buttonLayout = new QVBoxLayout;
-    pauseButton = new QPushButton(tr("Pause"));
-    pauseButton->setMaximumSize(100,50);
-    buttonLayout->addWidget(pauseButton);
+    replayButton = new QPushButton(tr("replay"));
+    replayButton->setMaximumSize(100,50);
+    connect(replayButton, SIGNAL(clicked()), minesArea, SLOT(replay()));
+    buttonLayout->addWidget(replayButton);
     buttonLayout->setMargin(10);
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->addWidget(minesArea);
@@ -31,5 +32,7 @@ void Widget::resizeEvent(QResizeEvent *size)
     minesArea->pressPos.setY(0);
     minesArea->movePos.setX(0);
     minesArea->movePos.setY(0);
+    minesArea->rightPressPos.setX(0);
+    minesArea->rightPressPos.setY(0);
     minesArea->update();
 }
