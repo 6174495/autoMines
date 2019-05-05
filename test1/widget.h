@@ -3,9 +3,11 @@
 
 #include <QWidget>
 #include <minesarea.h>
+#include <timeview.h>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
+
 
 namespace Ui {
 class Widget;
@@ -18,11 +20,11 @@ class Widget : public QWidget
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
-    void resizeEvent(QResizeEvent* size);
 
 private:
     Ui::Widget *ui;
     MinesArea *minesArea;
+    timeView *timeArea;
     QVBoxLayout *buttonLayout;
     QPushButton *replayButton;
 };

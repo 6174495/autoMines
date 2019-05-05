@@ -198,6 +198,7 @@ void MinesArea::paintEvent(QPaintEvent *)
                 p.drawText(allArea, Qt::AlignCenter, tr("WIN"));
                 p.setFont(mineFont);
             }*/
+
         }
     QPoint zero(0, 0);
     pressPos = zero;
@@ -293,4 +294,15 @@ void MinesArea::zeroBeIsPress(int i,int j)
     if(bePress&&i>=0&&i<sizeX&&j-1>=0&&j-1<sizeY&&minesNum[i][j-1]==0) zeroBeIsPress(i, j-1);
     if(bePress&&i+1>=0&&i+1<sizeX&&j>=0&&j<sizeY&&minesNum[i+1][j]==0) zeroBeIsPress(i+1, j);
     if(bePress&&i>=0&&i<sizeX&&j+1>=0&&j+1<sizeY&&minesNum[i][j+1]==0) zeroBeIsPress(i, j+1);
+}
+
+void MinesArea::resizeEvent(QResizeEvent *event)
+{
+    pressPos.setX(0);
+    pressPos.setY(0);
+    movePos.setX(0);
+    movePos.setY(0);
+    rightPressPos.setX(0);
+    rightPressPos.setY(0);
+    update();
 }

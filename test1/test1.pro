@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
+    timeview.cpp \
         widget.cpp \
     minesarea.cpp
 
 HEADERS += \
+    timeview.h \
         widget.h \
     minesarea.h
 

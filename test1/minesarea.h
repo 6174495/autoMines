@@ -23,6 +23,7 @@ public:
     explicit MinesArea(QWidget *parent = nullptr);
     void mouseMoveEvent(QMouseEvent*);
     void mousePressEvent(QMouseEvent*);
+    void resizeEvent(QResizeEvent* size);
     void paintEvent(QPaintEvent *);
     QPoint movePos;
     QPoint pressPos;
