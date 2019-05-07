@@ -89,8 +89,17 @@ void MinesArea::paintEvent(QPaintEvent *)
                     isPressed[i][j] = true;
                 }
             }
-            if(rightPressPos.x()>=x+j*mineW+2&&rightPressPos.x()<=x+(j+1)*mineW-2&&rightPressPos.y()>=y+i*mineH+2&&rightPressPos.y()<=y+(i+1)*mineH-2&&!isPressed[i][j])
+            if(rightPressPos.x()>=x+j*mineW+2&&rightPressPos.x()<=x+(j+1)*mineW-2&&rightPressPos.y()>=y+i*mineH+2&&rightPressPos.y()<=y+(i+1)*mineH-2&&!isPressed[i][j]){
+                if(isFlag[i][j]){
+                    flagSum--;
+                    flag(flagSum);
+                }
+                else{
+                    flagSum++;
+                    flag(flagSum);
+                }
                 isFlag[i][j] = !isFlag[i][j];
+            }
         }
     for(int i=0;i<16;i++)
         for(int j=0;j<32;j++){
@@ -101,13 +110,17 @@ void MinesArea::paintEvent(QPaintEvent *)
     if(!isWin){
         for(int i=0;i<16;i++)
             for(int j=0;j<32;j++){
-                if(isPressed[i][j]&&minesNum[i][j]==-1)
+                if(isPressed[i][j]&&minesNum[i][j]==-1){
                     gameOver = i * sizeY + j;
+                    Tstart(2);
+                }
                 if(isPressed[i][j])
                     clickNum++;
             }
-        if(clickNum==sizeX*sizeY-minesSum)
+        if(clickNum==sizeX*sizeY-minesSum){
             isWin = true;
+            Tstart(2);
+        }
     }
     for(int i=0;i<16;i++)
         for(int j=0;j<32;j++){
@@ -151,7 +164,7 @@ void MinesArea::paintEvent(QPaintEvent *)
                     p.setPen(blackPen);
                     p.setBrush(blackBrush);
                     if(minesNum[i][j]!=0){
-                        char a[] = {minesNum[i][j] + 48, '\0'};
+                        char a[] = {char(minesNum[i][j] + 48), '\0'};
                         p.drawText(mineArea, Qt::AlignCenter, tr(a));
                     }
                 }
@@ -240,6 +253,7 @@ void MinesArea::init()
             if(posX<sizeX-1&&minesNum[posX+1][posY]!=-1) minesNum[posX+1][posY]++;
             if(posX<sizeX-1&&posY<sizeY-1&&minesNum[posX+1][posY+1]!=-1) minesNum[posX+1][posY+1]++;
         }
+    Tstart(0);
 }
 
 void MinesArea::replay(){
@@ -247,6 +261,7 @@ void MinesArea::replay(){
     gameOver = -1;
     minesSum = 99;
     firstPress = -1;
+    flagSum = 0;
     isWin = false;
     QPoint zero(0, 0);
     pressPos = zero;
@@ -266,6 +281,8 @@ void MinesArea::replay(){
             isPressed[i][j] = false;
             isFlag[i][j] = false;
         }
+    flag(flagSum);
+    Tstart(1);
     update();
 }
 

@@ -29,6 +29,8 @@ public:
     QPoint pressPos;
     QPoint rightPressPos;
 signals:
+    void flag(int);
+    void Tstart(int);
 
 public slots:
     void replay();
@@ -39,6 +41,7 @@ private:
     bool isWin = false;
     int gameOver = -1;
     int firstPress = -1;
+    int flagSum = 0;
     QVector<QVector<bool>> isPressed;
     QVector<QVector<bool>> isFlag;
     void init();

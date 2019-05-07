@@ -6,6 +6,10 @@
 #include <QPainter>
 #include <QBrush>
 #include <QPoint>
+#include "timethread.h"
+#include <cmath>
+#include <QString>
+#include <QPoint>
 
 class timeView : public QWidget
 {
@@ -13,11 +17,16 @@ class timeView : public QWidget
 public:
     explicit timeView(QWidget *parent = nullptr);
     void mouseMoveEvent(QMouseEvent*);
-    void resizeEvent(QResizeEvent* size);
     void paintEvent(QPaintEvent *);
 signals:
 
 public slots:
+    void corn(double, int);
+    void flag(int);
+private:
+    double angle = 0;
+    int time = 0;
+    int flagCount = 0;
 };
 
 #endif // TIMEVIEW_H

@@ -7,6 +7,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QPushButton>
+#include <timet.h>
 
 
 namespace Ui {
@@ -27,6 +28,8 @@ private:
     timeView *timeArea;
     QVBoxLayout *buttonLayout;
     QPushButton *replayButton;
+    timeThread *clock;
+    timeT *T;
 };
 
 #endif // WIDGET_H

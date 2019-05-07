@@ -7,14 +7,17 @@ Widget::Widget(QWidget *parent) :
 {
     ui->setupUi(this);
     minesArea = new MinesArea;
-   // timeArea = new timeView;
-  //  timeArea->setMaximumSize(40, 40);
+    timeArea = new timeView;
+    T = new timeT;
     buttonLayout = new QVBoxLayout;
     replayButton = new QPushButton(tr("replay"));
     replayButton->setMaximumSize(100,50);
     connect(replayButton, SIGNAL(clicked()), minesArea, SLOT(replay()));
+    buttonLayout->addWidget(timeArea);
     buttonLayout->addWidget(replayButton);
- //   buttonLayout->addWidget(timeArea);
+    connect(T, SIGNAL(corn(double, int)), timeArea, SLOT(corn(double, int)));
+    connect(minesArea, SIGNAL(flag(int)), timeArea, SLOT(flag(int)));
+    connect(minesArea, SIGNAL(Tstart(int)), T, SLOT(Tstart(int)));
 
     QHBoxLayout *mainLayout = new QHBoxLayout;
     mainLayout->addWidget(minesArea);
