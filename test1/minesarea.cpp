@@ -1,4 +1,7 @@
 #include "minesarea.h"
+#include "autoai.h"
+#include "aicontrol.h"
+#include "QDebug"
 
 MinesArea::MinesArea(QWidget *parent) : QWidget(parent)
 {
@@ -32,25 +35,14 @@ void MinesArea::mousePressEvent(QMouseEvent *e)
 
 void MinesArea::paintEvent(QPaintEvent *)
 {
-    int x, y, w, h;
+    int x, y, mineH, mineW;
+    QVector<int> Attr = getAttr();
+    x = Attr[0];
+    y = Attr[1];
+    mineH = Attr[2];
+    mineW = Attr[3];
     int sizeX = minesNum.size();
     int sizeY = minesNum[0].size();
-    int mainH = height();
-    int mainW = width();
-    if(mainW >= 2 * mainH){
-        x = (mainW - 2 * mainH) / 2;
-        y = 0;
-        w = 2 * mainH;
-        h = mainH;
-    }
-    else{
-        x = 0;
-        y = (mainH - mainW / 2) / 2;
-        w = mainW;
-        h = mainW / 2;
-    }
-    int mineH = h / 16;
-    int mineW = w / 32;
     QPainter p(this);
     QPen whitePen(Qt::white);
     QPen grayPen(Qt::gray);
@@ -216,6 +208,7 @@ void MinesArea::paintEvent(QPaintEvent *)
     QPoint zero(0, 0);
     pressPos = zero;
     rightPressPos = zero;
+    emit updateComplete();
 }
 
 void MinesArea::init()
@@ -311,6 +304,53 @@ void MinesArea::zeroBeIsPress(int i,int j)
     if(bePress&&i>=0&&i<sizeX&&j-1>=0&&j-1<sizeY&&minesNum[i][j-1]==0) zeroBeIsPress(i, j-1);
     if(bePress&&i+1>=0&&i+1<sizeX&&j>=0&&j<sizeY&&minesNum[i+1][j]==0) zeroBeIsPress(i+1, j);
     if(bePress&&i>=0&&i<sizeX&&j+1>=0&&j+1<sizeY&&minesNum[i][j+1]==0) zeroBeIsPress(i, j+1);
+}
+
+void MinesArea::returnStatus(){
+    emit sendStatus(minesNum, isPressed, isFlag);
+}
+
+QVector<int> MinesArea::getAttr(){
+    int x, y, w, h;
+    int mainH = height();
+    int mainW = width();
+    if(mainW >= 2 * mainH){
+        x = (mainW - 2 * mainH) / 2;
+        y = 0;
+        w = 2 * mainH;
+        h = mainH;
+    }
+    else{
+        x = 0;
+        y = (mainH - mainW / 2) / 2;
+        w = mainW;
+        h = mainW / 2;
+    }
+    int mineH = h / 16;
+    int mineW = w / 32;
+    QVector<int> res = {x, y, mineH, mineW};
+    return res;
+}
+
+void MinesArea::setStatus(QVector<int> predict, bool isPress){
+    QVector<int> Attr = getAttr();
+    int x = Attr[0];
+    int y = Attr[1];
+    int mineH = Attr[2];
+    int mineW = Attr[3];
+    int i = predict[0];
+    int j = predict[1];
+    if(isPress){
+        pressPos.setX(x+(j+0.5)*mineW);
+        pressPos.setY(y+(i+0.5)*mineH);
+    }
+    else{
+        rightPressPos.setX(x+(j+0.5)*mineW);
+        rightPressPos.setY(y+(i+0.5)*mineH);
+    }
+    update();
+    if(gameOver!=-1||isWin)
+        emit sendStop();
 }
 
 void MinesArea::resizeEvent(QResizeEvent *event)

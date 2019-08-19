@@ -24,6 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+    aicontrol.cpp \
         main.cpp \
     timet.cpp \
     timeview.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     minesarea.cpp
 
 HEADERS += \
+    aicontrol.h \
     timet.h \
     timeview.h \
         widget.h \

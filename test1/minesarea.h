@@ -15,6 +15,7 @@
 #include <QString>
 #include <QColor>
 #include <cmath>
+#include <QObject>
 
 class MinesArea : public QWidget
 {
@@ -25,15 +26,24 @@ public:
     void mousePressEvent(QMouseEvent*);
     void resizeEvent(QResizeEvent* size);
     void paintEvent(QPaintEvent *);
+    QVector<QVector<int>> getMines(){return minesNum;}
+    QVector<QVector<bool>> getIsPressed(){return isPressed;}
+    QVector<QVector<bool>> getIsFlag(){return isFlag;}
     QPoint movePos;
     QPoint pressPos;
     QPoint rightPressPos;
 signals:
     void flag(int);
     void Tstart(int);
+    void sendStatus(QVector<QVector<int>> mines, QVector<QVector<bool>> isPress, QVector<QVector<bool>> isFlag);
+    void sendStop();
+    void updateComplete();
 
 public slots:
     void replay();
+    void returnStatus();
+    void setStatus(QVector<int>, bool);
+
 private:
     QVector<QVector<int>> minesNum;
     int minesSum;
@@ -47,6 +57,7 @@ private:
     void init();
     void swap(int &a, int &b);
     void zeroBeIsPress(int i, int j);
+    QVector<int> getAttr();
 };
 
 #endif // MINESAREA_H

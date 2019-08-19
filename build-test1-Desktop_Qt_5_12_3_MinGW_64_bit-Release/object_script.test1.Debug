@@ -1,0 +1,11 @@
+debug/aicontrol.o
+debug/main.o
+debug/timet.o
+debug/timeview.o
+debug/widget.o
+debug/minesarea.o
+debug/moc_aicontrol.o
+debug/moc_timet.o
+debug/moc_timeview.o
+debug/moc_widget.o
+debug/moc_minesarea.o

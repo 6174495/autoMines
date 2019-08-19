@@ -8,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <timet.h>
+#include <aicontrol.h>
 
 
 namespace Ui {
@@ -28,8 +29,10 @@ private:
     timeView *timeArea;
     QVBoxLayout *buttonLayout;
     QPushButton *replayButton;
+    QPushButton *autoButtion;
     timeThread *clock;
     timeT *T;
+    AIControl *AI;
 };
 
 #endif // WIDGET_H

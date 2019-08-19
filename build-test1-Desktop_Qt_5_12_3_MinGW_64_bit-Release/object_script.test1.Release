@@ -1,0 +1,11 @@
+release/aicontrol.o
+release/main.o
+release/timet.o
+release/timeview.o
+release/widget.o
+release/minesarea.o
+release/moc_aicontrol.o
+release/moc_timet.o
+release/moc_timeview.o
+release/moc_widget.o
+release/moc_minesarea.o
